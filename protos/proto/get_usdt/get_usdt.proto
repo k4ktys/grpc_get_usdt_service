@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package get_usdt;
+
+option go_package = "../pb";
+
+service GetUsdt {
+    rpc GetRates(GetRatesRequest) returns (GetRatesResponse);
+}
+
+message GetRatesRequest {
+    string market = 1;
+}
+
+message GetRatesResponse {
+    message Candle {
+        double price = 1;
+        double volume = 2;
+        double amount = 3;
+        double factor = 4;
+        string type = 5;
+    }
+
+    int64 timestamp = 1;
+    Candle ask = 2;
+    Candle bid = 3;
+}
