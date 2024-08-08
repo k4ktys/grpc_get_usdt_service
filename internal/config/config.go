@@ -1,51 +1,34 @@
 package config
 
 import (
-	"flag"
-	"os"
-	"time"
-
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	Env  string     `yaml:"env" env-default:"local"`
-	GRPC GRPCConfig `yaml:"grpc"`
+	Env string `env:"ENV" env-default:"dev"`
+
+	GrpcPort int `env:"GRPC_PORT"`
+
+	DbDriver   string `env:"DB_DRIVER"`
+	DbUser     string `env:"DB_USER"`
+	DbPassword string `env:"DB_PASSWORD"`
+	DbPort     string `env:"DB_PORT"`
+	DbName     string `env:"DB_NAME"`
 }
 
-type GRPCConfig struct {
-	Port    int           `yaml:"port"`
-	Timeout time.Duration `yaml:"timeout"`
-}
+func NewConfig() (*Config, error) {
+	config := &Config{}
 
-func LoadConfig() *Config {
-	path := fetchConfigPath()
-	if path == "" {
-		panic("config path is empty")
+	err := godotenv.Load()
+	if err != nil {
+		return nil, err
 	}
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		panic("config file does not exists: " + path)
+	err = cleanenv.ReadEnv(config)
+	if err != nil {
+		return nil, err
 	}
 
-	var cfg Config
-
-	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
-		panic("failed to read config: " + err.Error())
-	}
-
-	return &cfg
-}
-
-func fetchConfigPath() string {
-	var res string
-
-	flag.StringVar(&res, "config", "", "path to config file")
-	flag.Parse()
-
-	if res == "" {
-		res = os.Getenv("CONFIG_PATH")
-	}
-
-	return res
+	return config, nil
 }

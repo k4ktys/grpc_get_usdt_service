@@ -15,10 +15,10 @@ type App struct {
 	port       int
 }
 
-func New(log *zap.Logger, port int) *App {
+func New(log *zap.Logger, get_usdt_service getusdt_grpc.GetUsdtServicer, port int) *App {
 	gRPCServer := grpc.NewServer()
 
-	getusdt_grpc.Register(gRPCServer)
+	getusdt_grpc.Register(gRPCServer, get_usdt_service)
 
 	return &App{
 		log:        log,

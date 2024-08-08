@@ -14,10 +14,10 @@ message GetRatesRequest {
 
 message GetRatesResponse {
     message Candle {
-        double price = 1;
-        double volume = 2;
-        double amount = 3;
-        double factor = 4;
+        string price = 1;
+        string volume = 2;
+        string amount = 3;
+        string factor = 4;
         string type = 5;
     }
 

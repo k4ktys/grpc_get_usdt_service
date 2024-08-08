@@ -11,16 +11,18 @@ import (
 )
 
 func main() {
-	cfg := config.LoadConfig()
+	cfg, err := config.NewConfig()
+	if err != nil {
+		panic("failed to load config: " + err.Error())
+	}
 
 	log := setupLogger(cfg.Env)
 
-	log.Info("config file: ", zap.Any("cfg", cfg))
-
-	application := app.New(log, cfg.GRPC.Port)
+	application := app.New(log, cfg, cfg.GrpcPort)
 
 	go application.GRPCServer.Run()
 
+	//gracefull shutdown
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
 
@@ -33,7 +35,7 @@ func main() {
 
 func setupLogger(env string) *zap.Logger {
 	switch env {
-	case "local":
+	case "dev":
 		if logger, err := zap.NewDevelopment(); err != nil {
 			panic("error during setup logger: " + err.Error())
 		} else {
