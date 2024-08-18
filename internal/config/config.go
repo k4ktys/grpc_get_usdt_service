@@ -15,6 +15,8 @@ type Config struct {
 	DbPassword string `env:"DB_PASSWORD"`
 	DbPort     string `env:"DB_PORT"`
 	DbName     string `env:"DB_NAME"`
+
+	JaegerPort string `env:"JAEGER_PORT"`
 }
 
 func NewConfig() (*Config, error) {

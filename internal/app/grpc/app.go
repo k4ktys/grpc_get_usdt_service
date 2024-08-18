@@ -7,6 +7,8 @@ import (
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthgrpc "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type App struct {
@@ -17,6 +19,8 @@ type App struct {
 
 func New(log *zap.Logger, get_usdt_service getusdt_grpc.GetUsdtServicer, port int) *App {
 	gRPCServer := grpc.NewServer()
+	healthcheck := health.NewServer()
+	healthgrpc.RegisterHealthServer(gRPCServer, healthcheck)
 
 	getusdt_grpc.Register(gRPCServer, get_usdt_service)
 

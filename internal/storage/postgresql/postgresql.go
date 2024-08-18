@@ -40,3 +40,7 @@ func (s *Storage) SaveUsdtTrade(ctx context.Context, trade models.UsdtTrade) err
 
 	return nil
 }
+
+func (s *Storage) Stop() {
+	s.db.Close()
+}

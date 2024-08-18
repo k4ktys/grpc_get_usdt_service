@@ -3,6 +3,7 @@ package main
 import (
 	"grpc_get_usdt_service/internal/app"
 	"grpc_get_usdt_service/internal/config"
+	"grpc_get_usdt_service/internal/otel"
 	"os"
 	"os/signal"
 	"syscall"
@@ -18,7 +19,9 @@ func main() {
 
 	log := setupLogger(cfg.Env)
 
-	application := app.New(log, cfg, cfg.GrpcPort)
+	otelProvider := otel.NewOtelProvider()
+
+	application := app.New(log, cfg, cfg.GrpcPort, otelProvider)
 
 	go application.GRPCServer.Run()
 
@@ -28,7 +31,7 @@ func main() {
 
 	<-stop
 
-	application.GRPCServer.Stop()
+	application.Stop()
 
 	log.Info("application stopped")
 }
