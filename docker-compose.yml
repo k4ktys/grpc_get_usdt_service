@@ -1,6 +1,18 @@
 version: '3'
 
 services:
+  get_usdt_service:
+    container_name: get_usdt_service
+    build: ./
+    depends_on:
+      db:
+          condition: service_healthy
+          restart: true
+    networks:
+      - get_usdt_network
+    ports:
+      - "44044:44044"
+      - "9091:9091"
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
@@ -8,6 +20,8 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    networks:
+      - get_usdt_network
   db:
     container_name: get_usdt_db
     image: postgres
@@ -15,11 +29,18 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
     networks:
       - get_usdt_network
     ports:
       - "5432:${DB_PORT}"
   jaeger:
+    container_name: jaeger
     image: jaegertracing/all-in-one
     environment:
       - COLLECTOR_OTLP_ENABLED=true
@@ -27,7 +48,10 @@ services:
       - "4317:4317"
       - "4318:4318"
       - "16686:16686"
+    networks:
+      - get_usdt_network
 
 networks:
   get_usdt_network:
     external: true
+    driver: bridge

@@ -3,6 +3,7 @@ package main
 import (
 	"grpc_get_usdt_service/internal/app"
 	"grpc_get_usdt_service/internal/config"
+	"grpc_get_usdt_service/internal/migrator"
 	"grpc_get_usdt_service/internal/otel"
 	"os"
 	"os/signal"
@@ -19,11 +20,17 @@ func main() {
 
 	log := setupLogger(cfg.Env)
 
+	migrator.Migrate("./migrations", cfg.DbUser, cfg.DbPassword, cfg.DbPort, "postgres")
+
 	otelProvider := otel.NewOtelProvider()
 
 	application := app.New(log, cfg, cfg.GrpcPort, otelProvider)
 
-	go application.GRPCServer.Run()
+	go func() {
+		if err := application.GRPCServer.Run(); err != nil {
+			panic(err)
+		}
+	}()
 
 	//gracefull shutdown
 	stop := make(chan os.Signal, 1)

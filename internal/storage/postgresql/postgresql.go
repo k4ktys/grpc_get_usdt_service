@@ -15,7 +15,7 @@ type Storage struct {
 }
 
 func New(cfg *config.Config) (*Storage, error) {
-	dbConnection := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", cfg.DbUser, cfg.DbPassword, cfg.DbPort, cfg.DbName)
+	dbConnection := fmt.Sprintf("postgres://%s:%s@get_usdt_db:%s/%s?sslmode=disable", cfg.DbUser, cfg.DbPassword, cfg.DbPort, cfg.DbName)
 
 	dbpool, err := pgxpool.New(context.Background(), dbConnection)
 	if err != nil {

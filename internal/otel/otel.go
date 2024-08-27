@@ -68,7 +68,7 @@ func NewOtelProvider() *OtelProvider {
 }
 
 func initConn() (*grpc.ClientConn, error) {
-	conn, err := grpc.NewClient("localhost:4317",
+	conn, err := grpc.NewClient("jaeger:4317",
 		// Note the use of insecure transport here. TLS is recommended in production.
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
