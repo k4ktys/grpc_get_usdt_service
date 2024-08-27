@@ -7,4 +7,10 @@ lint:
 	golangci-lint run
 
 build:
-	go build -o main ${MAIN_PKG_PATH} 
+	go build -o main ${MAIN_PKG_PATH}
+
+test:
+	go test ./tests
+
+docker-build:
+	docker build --tag get_usdt_go_app .
